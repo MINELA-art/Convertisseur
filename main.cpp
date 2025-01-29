@@ -61,23 +61,116 @@ void Menu_secondaire(){
         BoucleDuJeu();
     }
 }
-void verification_dec(int nbre_decimal){
-    // Boucle pour garantir une entrée valide
-    while (true) {
-        cout << "Entrez le nombre decimal que vous souhaitez convertir : ";
-        cin >> nbre_decimal;
 
-        // Vérification de l'entrée
-        if (cin.fail()) {
-            cin.clear(); // Réinitialise les flags d'erreur
-            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Ignore le reste de l'entrée
-            cout << "Erreur : Veuillez entrer un nombre entier valide.\n";
-        } else if (nbre_decimal < 0) {
-            cout << "Erreur : Veuillez entrer un nombre entier positif ou nul.\n";
-        } else {
-            break; // L'entrée est correcte, sortir de la boucle
+
+//fonction pour convertir un nbre décimal négatif en un nombre décimal positif en utilisant la méthode du complément à 2
+int dec_complement(int n){
+    n = n * -1;
+    string str = to_string(n);
+    str = "0" + str;
+    //complémenter les chiffre de la chaine obtenue en suivant la logique du complément à 1
+    for (size_t i = 0; i < str.length(); i++){
+        str[i] = '9'- str[i] + '0';
+    }
+    int result = stoi(str) + 1 ; //conversion de la nouvelle chaine obtenue en entier
+    return result;
+}
+
+
+//fonction pour convertir un nbre binaire négatif en un nombre binaire positif en utilisant la méthode du complément à 2
+string bin_complement (string n){
+    if ( n[0] == '-'){
+        n[0] = '0';   //remplace le premier caractère par 0
+        //inverser les 1 et les 0
+        for (char &c : n){
+            if(c == '0'){c = '1';}
+            else if(c == '1'){c = '0';}
+        }
+        bool retenue = true;
+        for(int i = n.size() - 1; i >= 0; --i){
+            if(retenue){
+                if (n[i] == '0'){
+                    n[i] = '1';
+                    retenue = false;
+                }else {
+                n[i] = '0'; 
+                }
+            }
+        }
+        n = n ;
+    }
+    else{
+        n = n;
+    }
+    cout << "L'équivalent de ce nombre négatif est:" <<n <<"\n";
+    return n;
+}
+
+
+//fonction pour convertir un nbre octal négatif en un nombre octal positif en utilisant la méthode du complément à 2
+string oct_complement (string n){
+    if( n[0] == '-'){
+       n[0] = '0';   //remplace le premier caractère par 0
+        //complémenter les chiffre de la chaine obtenue en suivant la logique du complément à 1
+        for (size_t i = 0; i < n.length(); i++){
+            n[i] = '7'- n[i] + '0';
+        } 
+        //ajouter 1
+        for (int i = n.size() - 1; i >= 0; --i)
+        {
+            if (n[i] < '7')
+            {
+                n[i] = n[i] + 1;
+                break;
+            }
+        }  
+    }
+    cout << "L'équivalent de ce nombre négatif est:" <<n <<"\n";
+    return n;
+}
+
+
+//fonction pour convertir un nbre hexa négatif en un nombre hexa positif en utilisant la méthode du complément à 2
+string hexa_complement (string n){
+    if( n[0] == '-'){
+        n[0] = '0';   //remplace le premier caractère par 0
+        //complémenter les chiffre de la chaine obtenue en suivant la logique du complément à 1
+        //vérifier si le cractère est un chiffre (0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
+        for(char &c : n){
+            switch (c)
+            {
+            case '0': c = 'F';break;
+            case '1': c = 'E';break;
+            case '2': c = 'D';break;
+            case '3': c = 'C';break;
+            case '4': c = 'B';break;
+            case '5': c = 'A';break;
+            case '6': c = '9';break;
+            case '7': c = '8';break;
+            case '8': c = '7';break;
+            case '9': c = '6';break;
+            case 'A': c = '5';break;
+            case 'B': c = '4';break;
+            case 'C': c = '3';break;
+            case 'D': c = '2';break;
+            case 'E': c = '1';break;
+            case 'F': c = '0';break;
+            default:
+                break;
+            }
+        }
+        bool retenue = true;
+        for(int i = n.size() - 1; i >= 1 && retenue; --i){
+            if(n[i] >= '0' && n[i] <= '9'){
+                n[i] = n[i] + 1;
+            }else if(n[i] >= 'A' && n[i] <= 'F'){
+                n[i] = n[i] + 1;
+            }
+            retenue = false;
         }
     }
+    cout << "L'équivalent de ce nombre négatif est:" <<n <<"\n";
+    return n;
 }
 
 
@@ -90,18 +183,21 @@ void bin_vers_dec(){
     //validation de l'entrée
     bool valide = false;
     do
-    {   
+    {
         cout <<"Entrez le nombre binaire que vous souhaitez convertir : ";
         cin >> nbre_binaire;
         valide = true;
-        for (char c:nbre_binaire ){
-            if(c != '0' && c != '1'){
-                cout << "veiller entrez un nombre contenant uniquement des '0' et des '1' .\n";
+        for (size_t i = (nbre_binaire[0] == '-' ? 1 : 0); i < nbre_binaire.length(); i++){
+            if (nbre_binaire[i] != '0'&& nbre_binaire[i] != '1'){
+                cout << "veillez entrer un nombre contenant uniquement des '0' et des '1' .\n";
                 valide = false;
                 break;
             }
         }
     } while (!valide);
+    if ( nbre_binaire[0] == '-'){
+        nbre_binaire = bin_complement(nbre_binaire);
+    }
     for(int i = nbre_binaire.length() - 1; i >= 0; i--){
         int bit = nbre_binaire[i] - '0'; //convertir le caractère en entier
         nbre_decimal += bit * pow(2, puissance);
@@ -132,18 +228,21 @@ void bin_vers_hex(){
     cout <<"Vous avez choisi l'option de conversion binaire vers hexadecimal.\n";
     bool valide = false;
     do
-    {   
+    {
         cout <<"Entrez le nombre binaire que vous souhaitez convertir : ";
         cin >> nbre_binaire;
         valide = true;
-        for (char c:nbre_binaire ){
-            if(c != '0' && c != '1'){
-                cout << "veiller entrez un nombre contenant uniquement des '0' et des '1' .\n";
+        for (size_t i = (nbre_binaire[0] == '-' ? 1 : 0); i < nbre_binaire.length(); i++){
+            if (nbre_binaire[i] != '0'&& nbre_binaire[i] != '1'){
+                cout << "veillez entrer un nombre contenant uniquement des '0' et des '1' .\n";
                 valide = false;
                 break;
             }
         }
     } while (!valide);
+    if ( nbre_binaire[0] == '-'){
+        nbre_binaire = bin_complement(nbre_binaire);
+    }//conversion en positif si necessaire
     cout << "(" << nbre_binaire <<")\u2082 ---> (";
     string nbre_hexadecimal = "";
     int longueur_nbre_binaire = nbre_binaire.size();
@@ -201,18 +300,21 @@ void bin_vers_oct(){
     cout <<"Vous avez choisi l'option de conversion binaire vers octal.\n";
     bool valide = false;
     do
-    {   
+    {
         cout <<"Entrez le nombre binaire que vous souhaitez convertir : ";
         cin >> nbre_binaire;
         valide = true;
-        for (char c:nbre_binaire ){
-            if(c != '0' && c != '1'){
-                cout << "veiller entrez un nombre contenant uniquement des '0' et des '1' .\n";
+        for (size_t i = (nbre_binaire[0] == '-' ? 1 : 0); i < nbre_binaire.length(); i++){
+            if (nbre_binaire[i] != '0'&& nbre_binaire[i] != '1'){
+                cout << "veillez entrer un nombre contenant uniquement des '0' et des '1' .\n";
                 valide = false;
                 break;
             }
         }
     } while (!valide);
+    if ( nbre_binaire[0] == '-'){
+        nbre_binaire = bin_complement(nbre_binaire);
+    }
     cout << "(" << nbre_binaire <<")\u2082 ---> (";
     string nbre_octal = "";
     while (nbre_binaire.length() % 3 != 0) 
@@ -266,8 +368,10 @@ void dec_vers_bin() {
             cin.clear(); // Réinitialise les flags d'erreur
             cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Ignore le reste de l'entrée
             cout << "Erreur : Veuillez entrer un nombre entier valide.\n";
-        } else if (nbre_decimal < 0) {
-            cout << "Erreur : Veuillez entrer un nombre entier positif ou nul.\n";
+        } else if (nbre_decimal < 0 ) {
+            nbre_decimal = dec_complement(nbre_decimal);
+            cout <<"L'équivalent de ce nombre négatif est:" <<nbre_decimal <<"\n";
+            break;
         } else {
             break; // L'entrée est correcte, sortir de la boucle
         }
@@ -324,7 +428,9 @@ void dec_vers_hex(){
             cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Ignore le reste de l'entrée
             cout << "Erreur : Veuillez entrer un nombre entier valide.\n";
         } else if (nbre_decimal < 0) {
-            cout << "Erreur : Veuillez entrer un nombre entier positif ou nul.\n";
+            nbre_decimal = dec_complement(nbre_decimal);
+            cout <<"L'équivalent de ce nombre négatif est:" <<nbre_decimal <<"\n";
+            break;
         } else {
             break; // L'entrée est correcte, sortir de la boucle
         }
@@ -371,7 +477,9 @@ void dec_vers_oct(){
             cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Ignore le reste de l'entrée
             cout << "Erreur : Veuillez entrer un nombre entier valide.\n";
         } else if (nbre_decimal < 0) {
-            cout << "Erreur : Veuillez entrer un nombre entier positif ou nul.\n";
+            nbre_decimal = dec_complement(nbre_decimal);
+            cout <<"L'équivalent de ce nombre négatif est:" <<nbre_decimal <<"\n";
+            break;
         } else {
             break; // L'entrée est correcte, sortir de la boucle
         }
@@ -405,11 +513,14 @@ void dec_vers_oct(){
 
 //fonction de conversion hexadecimal vers
 void hex_vers_bin(){
-    char nbre_hex[100];
+    string nbre_hex = "";
     string nbre_binaire = "";
     cout <<"Vous avez choisi l'option de conversion hexadecimal vers binaire.\n";
     cout <<"Entrez le nombre hexadecimal que vous souhaitez convertir : ";
     cin >> nbre_hex;
+    if ( nbre_hex[0] == '-'){
+        nbre_hex = hexa_complement(nbre_hex);
+    }
     cout << "(" << nbre_hex <<")\u2081\u2086 ---> (";
     for(int i = 0; nbre_hex[i] != '\0'; i++ ){
         if(nbre_hex[i] == '0'){nbre_binaire = "0000";}
@@ -461,6 +572,9 @@ void hex_vers_dec(){
     cout <<"Vous avez choisi l'option de conversion hexadecimal vers decimal.\n";
     cout <<"Entrez le nombre hexadecimal que vous souhaitez convertir : ";
     cin >> nbre_hex;
+    if ( nbre_hex[0] == '-'){
+        nbre_hex = hexa_complement(nbre_hex);
+    }
     cout << "(" << nbre_hex <<")\u2081\u2086 ---> (";
     for(int i = nbre_hex.length() - 1 ; i >= 0; i--){
         char caractere = nbre_hex[i];
@@ -508,6 +622,9 @@ void hex_vers_oct(){
     cout <<"Vous avez choisi l'option de conversion hexadecimal vers octal.\n";
     cout <<"Entrez le nombre hexadecimal que vous souhaitez convertir : ";
     cin >> nbre_hex;
+    if ( nbre_hex[0] == '-'){
+        nbre_hex = hexa_complement(nbre_hex);
+    }
     cout << "(" << nbre_hex <<")\u2081\u2086 ---> (";
     //Etapes 1 : coversion hexadecimal vers decimal
     for(int i = nbre_hex.length() - 1 ; i >= 0; i--){
@@ -561,6 +678,9 @@ void oct_vers_bin(){
     cout <<"Vous avez choisi l'option de conversion octal vers binaire.\n";
     cout <<"Entrez le nombre octal que vous souhaitez convertir : ";
     cin >> nbre_oct;
+    if (nbre_oct[0] == '-'){
+        nbre_oct = oct_complement(nbre_oct);
+    }
     cout << "(" << nbre_oct <<")\u2088 ---> (";
     for(int i = 0; nbre_oct[i] != '\0'; i++ ){
         if(nbre_oct[i] == '0'){nbre_binaire = "000";}
@@ -573,7 +693,7 @@ void oct_vers_bin(){
         else if(nbre_oct[i] == '7'){nbre_binaire = "111";}
         else{
             throw
-            invalid_argument("Caractere hexa invalide");
+            invalid_argument("Caractere octal invalide");
         }
         cout <<nbre_binaire;
     }
@@ -603,6 +723,9 @@ void oct_vers_dec(){
     cout <<"Vous avez choisi l'option de conversion octal vers decimal.\n";
     cout <<"Entrez le nombre octal que vous souhaitez convertir : ";
     cin >> nbre_octal;
+    if (nbre_octal[0] == '-'){
+        nbre_octal = oct_complement(nbre_octal);
+    }
     cout << "(" << nbre_octal <<")\u2088 ---> (";
     for(int i = nbre_octal.length() - 1 ; i >= 0; i--){
         char caractere = nbre_octal[i];
@@ -646,6 +769,9 @@ void oct_vers_hex(){
     cout <<"Vous avez choisi l'option de conversion octal vers hexadecimal.\n";
     cout <<"Entrez le nombre octal que vous souhaitez convertir : ";
     cin >> nbre_octal;
+    if (nbre_octal[0] == '-'){
+        nbre_octal = oct_complement(nbre_octal);
+    }
     cout << "(" << nbre_octal <<")\u2088 ---> (";
     //Etapes 1 : coversion octal vers decimal
     for(int i = nbre_octal.length() - 1 ; i >= 0; i--){
